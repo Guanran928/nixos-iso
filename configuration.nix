@@ -1,6 +1,4 @@
 {
-  lib,
-  inputs,
   pkgs,
   ...
 }:
@@ -11,6 +9,8 @@
     squashfsCompression = "gzip -Xcompression-level 1";
   };
 
+  boot.loader.grub.memtest86.enable = true;
+
   console = {
     earlySetup = true;
     keyMap = "dvorak";
@@ -18,6 +18,7 @@
 
   environment.systemPackages = with pkgs; [
     gparted
+    kdiskmark
   ];
 
   programs = {
@@ -25,6 +26,11 @@
     fish.enable = true;
     sway.enable = true;
     tmux.enable = true;
+
+    gnupg.agent = {
+      enable = true;
+      pinentryPackage = pkgs.pinentry-gnome3;
+    };
   };
 
   users.users.nixos.shell = pkgs.fish;
@@ -38,19 +44,15 @@
     }
   '';
 
-  nix = {
+  nix.settings = {
     # TUNA - 清华大学 Mirror
-    settings.substituters = [ "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store" ];
+    substituters = [ "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store" ];
 
     # 启用 Flakes
-    settings.experimental-features = [
+    experimental-features = [
       "flakes"
       "nix-command"
     ];
-
-    # Add each flake input as a registry
-    # To make nix3 commands consistent with the flake
-    registry = lib.mapAttrs (_: value: { flake = value; }) inputs;
   };
 
   # GParted 依赖 Polkit 提权
