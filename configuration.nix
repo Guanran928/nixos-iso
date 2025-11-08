@@ -39,6 +39,7 @@
     exec fcitx5 -d
 
     input type:keyboard {
+      xkb_layout us
       xkb_variant dvorak
       xkb_options caps:escape,altwin:swap_lalt_lwin
     }
