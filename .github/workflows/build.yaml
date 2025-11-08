@@ -1,0 +1,30 @@
+name: Build ISO
+
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '0 0 * * 0'  # every Sunday at midnight UTC
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        VARIANT: [minimal, gnome, plasma6]
+    outputs:
+      release_built: ${{ steps.set-output.outputs.release_built }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: cachix/install-nix-action@v31
+
+      - name: Build ISO for variant "${{ matrix.VARIANT }}"
+        run: nix build .#${{ matrix.VARIANT }}
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: nixos-${{ matrix.VARIANT }}
+          path: result/iso/nixos-*.iso
