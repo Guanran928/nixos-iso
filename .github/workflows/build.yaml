@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+  pull_request:
   schedule:
     - cron: '0 0 * * 0'  # every Sunday at midnight UTC
 
@@ -16,7 +17,7 @@ jobs:
     outputs:
       release_built: ${{ steps.set-output.outputs.release_built }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: cachix/install-nix-action@v31
 
@@ -24,7 +25,7 @@ jobs:
         run: nix build .#${{ matrix.VARIANT }}
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v4.6.2
+        uses: actions/upload-artifact@v7
         with:
           name: nixos-${{ matrix.VARIANT }}
           path: result/iso/nixos-*.iso
